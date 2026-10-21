@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Header from "@/components/Header";
+import { playClickSound } from "@/lib/sounds";
 
 const PREMIOS = [
   { nombre: "Tomatodo", imagen: "/images/tomatodo.webp", type: "prize" },
@@ -46,6 +47,7 @@ export default function StepRuleta({ onPremio }: Props) {
 
   const spin = () => {
     if (spinning) return;
+    playClickSound();
     setSpinning(true);
 
     const winnerIndex = getWeightedPrizeIndex();

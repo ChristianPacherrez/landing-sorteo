@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Header from "@/components/Header";
+import { playClickSound } from "@/lib/sounds";
 
 type Props = {
   onContinue: () => void;
@@ -64,7 +65,7 @@ export default function StepQR({ onContinue }: Props) {
           </div>
 
           <button
-            onClick={onContinue}
+            onClick={() => { playClickSound(); onContinue(); }}
             className="mt-10 border-2 border-white px-8 py-3 text-sm font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-primary active:scale-[0.98]"
           >
             ¡Ya los sigo! Ir a la ruleta

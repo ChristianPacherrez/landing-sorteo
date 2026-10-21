@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import { playClickSound } from "@/lib/sounds";
 
 type ConfettiPiece = {
   id: number;
@@ -121,7 +122,7 @@ export default function StepPremio({ premio, onReset }: Props) {
           </p>
 
           <button
-            onClick={onReset}
+            onClick={() => { playClickSound(); onReset(); }}
             className="mt-8 border-2 border-white px-8 py-3 text-sm font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-purple active:scale-[0.98]"
           >
             Volver al inicio

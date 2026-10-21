@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { FormData } from "@/app/page";
 import Header from "@/components/Header";
+import { playClickSound } from "@/lib/sounds";
 
 const SERVICIOS_OPTIONS = [
   "Aire acondicionado residencial",
@@ -76,6 +77,7 @@ export default function StepRegistro({ onSubmit }: Props) {
     }
 
     setLoading(false);
+    playClickSound();
     onSubmit(form);
   };
 
