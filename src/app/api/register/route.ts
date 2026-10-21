@@ -3,9 +3,9 @@ import nodemailer from "nodemailer";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { nombre, apellido, email, telefono } = body;
+  const { nombres, email, telefono, empresa, servicios } = body;
 
-  if (!nombre || !apellido || !email || !telefono) {
+  if (!nombres || !email || !telefono || !empresa) {
     return NextResponse.json({ error: "Faltan campos" }, { status: 400 });
   }
 
@@ -23,12 +23,14 @@ export async function POST(request: Request) {
     await transporter.sendMail({
       from: process.env.SMTP_USER,
       to: process.env.NOTIFICATION_EMAIL,
-      subject: `Nuevo registro - ${nombre} ${apellido}`,
+      subject: `Nuevo registro - ${nombres}`,
       html: `
-        <h2>Nuevo registro en el sorteo</h2>
-        <p><strong>Nombre:</strong> ${nombre} ${apellido}</p>
+        <h2>Nuevo registro en el sorteo DAIKIN SAEG</h2>
+        <p><strong>Nombres:</strong> ${nombres}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Teléfono:</strong> ${telefono}</p>
+        <p><strong>Empresa:</strong> ${empresa}</p>
+        <p><strong>Servicios interesados:</strong> ${Array.isArray(servicios) ? servicios.join(", ") : "N/A"}</p>
         <p><strong>Fecha:</strong> ${new Date().toLocaleString("es-PE")}</p>
       `,
     });

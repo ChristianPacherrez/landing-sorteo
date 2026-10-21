@@ -7,19 +7,21 @@ import StepRuleta from "@/components/StepRuleta";
 import StepPremio from "@/components/StepPremio";
 
 export type FormData = {
-  nombre: string;
-  apellido: string;
+  nombres: string;
   email: string;
   telefono: string;
+  empresa: string;
+  servicios: string[];
 };
 
 export default function Home() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
-    nombre: "",
-    apellido: "",
+    nombres: "",
     email: "",
     telefono: "",
+    empresa: "",
+    servicios: [],
   });
   const [premio, setPremio] = useState("");
 
@@ -38,7 +40,7 @@ export default function Home() {
   };
 
   const handleReset = () => {
-    setFormData({ nombre: "", apellido: "", email: "", telefono: "" });
+    setFormData({ nombres: "", email: "", telefono: "", empresa: "", servicios: [] });
     setPremio("");
     setStep(1);
   };

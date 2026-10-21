@@ -1,15 +1,12 @@
 @import "tailwindcss";
 
-:root {
-  --color-background: #ffffff;
-  --color-foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #0a0a0a;
-    --color-foreground: #ededed;
-  }
+@theme {
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --color-primary: #0097E0;
+  --color-primary-dark: #006BA7;
+  --color-dark: #1a1a2e;
+  --color-accent: #54C3F1;
+  --color-purple: #2d1b69;
 }
 
 html,
@@ -22,13 +19,39 @@ body {
 }
 
 body {
-  color: var(--color-foreground);
-  background: var(--color-background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background: var(--color-dark);
+  color: #ffffff;
 }
 
 input,
 select,
 textarea {
   user-select: text;
+}
+
+input::placeholder,
+select::placeholder {
+  color: #999;
+}
+
+@keyframes spin-wheel {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(var(--spin-degrees)); }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+  50% { transform: scale(1.05); text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4); }
+}
+
+@keyframes firework {
+  0% { transform: scale(0); opacity: 1; }
+  50% { opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
