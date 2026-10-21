@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "/Users/chpacris/.local/node/bin/node",
+      "runtimeArgs": [
+        "/Users/chpacris/Documents/personal/limagencia/landing-sorteo/node_modules/.bin/next",
+        "dev"
+      ],
+      "port": 3000
+    }
+  ]
+}
