@@ -108,7 +108,7 @@ export default function StepRegistro({ onSubmit }: Props) {
                   required
                   value={form.nombres}
                   onChange={handleChange}
-                  className="w-full border-b border-gray-300 bg-transparent py-2 text-sm text-dark outline-none focus:border-primary"
+                  className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
                 />
               </div>
 
@@ -120,7 +120,7 @@ export default function StepRegistro({ onSubmit }: Props) {
                   required
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full border-b border-gray-300 bg-transparent py-2 text-sm text-dark outline-none focus:border-primary"
+                  className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
                 />
               </div>
 
@@ -132,7 +132,7 @@ export default function StepRegistro({ onSubmit }: Props) {
                   required
                   value={form.telefono}
                   onChange={handleChange}
-                  className="w-full border-b border-gray-300 bg-transparent py-2 text-sm text-dark outline-none focus:border-primary"
+                  className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
                 />
               </div>
 
@@ -145,7 +145,7 @@ export default function StepRegistro({ onSubmit }: Props) {
                     required
                     value={form.empresa}
                     onChange={handleChange}
-                    className="w-full border-b border-gray-300 bg-transparent py-2 text-sm text-dark outline-none focus:border-primary"
+                    className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
                   />
                 </div>
                 <div>
@@ -153,7 +153,7 @@ export default function StepRegistro({ onSubmit }: Props) {
                   <button
                     type="button"
                     onClick={() => setShowServicios(!showServicios)}
-                    className="w-full border-b border-gray-300 bg-transparent py-2 text-sm text-left text-dark outline-none focus:border-primary"
+                    className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-left text-dark outline-none focus:border-primary"
                   >
                     {form.servicios.length > 0
                       ? `${form.servicios.length} seleccionado(s)`
@@ -196,7 +196,7 @@ export default function StepRegistro({ onSubmit }: Props) {
               <button
                 type="submit"
                 disabled={!isValid || loading}
-                className="w-full rounded-full bg-primary py-3 text-sm font-bold uppercase text-white tracking-wide disabled:opacity-50 transition-all hover:bg-primary-dark active:scale-[0.98]"
+                className="w-full bg-primary py-3 text-sm font-bold uppercase text-white tracking-wide disabled:opacity-50 transition-all hover:bg-primary-dark active:scale-[0.98]"
               >
                 {loading ? "Registrando..." : "Registrarme y continuar"}
               </button>

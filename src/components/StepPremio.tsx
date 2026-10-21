@@ -122,7 +122,7 @@ export default function StepPremio({ premio, onReset }: Props) {
 
           <button
             onClick={onReset}
-            className="mt-8 rounded-full border-2 border-white px-8 py-3 text-sm font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-purple active:scale-[0.98]"
+            className="mt-8 border-2 border-white px-8 py-3 text-sm font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-purple active:scale-[0.98]"
           >
             Volver al inicio
           </button>

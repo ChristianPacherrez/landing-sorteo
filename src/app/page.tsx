@@ -46,11 +46,22 @@ export default function Home() {
   };
 
   return (
-    <main className="h-screen w-screen overflow-hidden">
-      {step === 1 && <StepRegistro onSubmit={handleRegistro} />}
-      {step === 2 && <StepQR onContinue={handleQRContinue} />}
-      {step === 3 && <StepRuleta onPremio={handlePremio} />}
-      {step === 4 && <StepPremio premio={premio} onReset={handleReset} />}
+    <main className="h-screen w-screen overflow-hidden flex justify-center bg-gray-900">
+      {/* Blurred sides on desktop */}
+      <div className="hidden lg:block fixed inset-0 z-0">
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-40"
+          style={{ backgroundImage: "url('/images/image-background.webp')" }}
+        />
+        <div className="absolute inset-0 bg-gray-900/60" />
+      </div>
+
+      <div className="relative z-10 h-full w-full max-w-[768px] shadow-2xl">
+        {step === 1 && <StepRegistro onSubmit={handleRegistro} />}
+        {step === 2 && <StepQR onContinue={handleQRContinue} />}
+        {step === 3 && <StepRuleta onPremio={handlePremio} />}
+        {step === 4 && <StepPremio premio={premio} onReset={handleReset} />}
+      </div>
     </main>
   );
 }
