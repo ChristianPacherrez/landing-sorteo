@@ -80,17 +80,17 @@ export default function StepRegistro({ onSubmit }: Props) {
   };
 
   return (
-    <section className="relative flex h-full flex-col">
+    <section className="relative flex min-h-full flex-col">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/images/image-background.webp')" }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/90 to-transparent" />
 
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col min-h-full">
         <Header />
 
-        <div className="flex-1 overflow-y-auto px-6 pb-6">
+        <div className="flex-1 px-6 pb-8">
           <div className="mx-auto max-w-md">
             <h1 className="text-2xl md:text-3xl font-bold text-center text-dark mt-4">
               ¡Bienvenido a nuestra experiencia!

@@ -46,7 +46,7 @@ export default function Home() {
   };
 
   return (
-    <main className="h-screen w-screen overflow-hidden flex justify-center bg-gray-900">
+    <main className="h-screen w-screen flex justify-center bg-gray-900 overflow-hidden">
       {/* Blurred sides on desktop */}
       <div className="hidden lg:block fixed inset-0 z-0">
         <div
@@ -56,7 +56,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gray-900/60" />
       </div>
 
-      <div className="relative z-10 h-full w-full max-w-[768px] shadow-2xl">
+      <div className="relative z-10 h-full w-full max-w-[768px] shadow-2xl overflow-y-auto">
         {step === 1 && <StepRegistro onSubmit={handleRegistro} />}
         {step === 2 && <StepQR onContinue={handleQRContinue} />}
         {step === 3 && <StepRuleta onPremio={handlePremio} />}

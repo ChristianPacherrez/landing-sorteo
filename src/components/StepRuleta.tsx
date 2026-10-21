@@ -67,13 +67,13 @@ export default function StepRuleta({ onPremio }: Props) {
   };
 
   return (
-    <section className="relative flex h-full flex-col">
+    <section className="relative flex min-h-full flex-col">
       <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-primary" />
 
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col min-h-full">
         <Header />
 
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-dark">
             ¡Llego tu turno!
           </h2>

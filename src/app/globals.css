@@ -12,10 +12,13 @@
 html,
 body {
   height: 100%;
-  overflow: hidden;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+}
+
+html {
+  overflow: hidden;
 }
 
 body {

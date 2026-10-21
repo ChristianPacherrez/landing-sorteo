@@ -60,7 +60,7 @@ export default function StepPremio({ premio, onReset }: Props) {
   }, []);
 
   return (
-    <section className="relative flex h-full flex-col overflow-hidden bg-gradient-to-b from-[#1a0a3e] via-[#2d1b69] to-[#1a0a3e]">
+    <section className="relative flex min-h-full flex-col overflow-hidden bg-gradient-to-b from-[#1a0a3e] via-[#2d1b69] to-[#1a0a3e]">
       {/* Confetti */}
       {confetti.map((piece) => (
         <div
@@ -95,11 +95,11 @@ export default function StepPremio({ premio, onReset }: Props) {
         />
       ))}
 
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col min-h-full">
         <Header />
 
         <div
-          className={`flex-1 flex flex-col items-center justify-center px-6 transition-all duration-1000 ${
+          className={`flex-1 flex flex-col items-center justify-center px-6 py-8 transition-all duration-1000 ${
             show ? "opacity-100 scale-100" : "opacity-0 scale-50"
           }`}
         >
