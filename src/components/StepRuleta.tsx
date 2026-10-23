@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Header from "@/components/Header";
-import { playClickSound } from "@/lib/sounds";
 
+// --- Prize configuration with weighted probabilities ---
+// Weights: higher = more likely. Kit Completo has the lowest weight.
+// Tomatodo: 30%, Retry: 15% each (x3 = 45%), Gota: 20%, Kit: 5% → total 100
 const PREMIOS = [
-  { nombre: "Tomatodo", imagen: "/images/tomatodo.webp", type: "prize" },
-  { nombre: "Gira una vez más", imagen: "/icons/cambiar.svg", type: "retry" },
-  { nombre: "Gota antiestrés", imagen: "/images/gota-antiestres.webp", type: "prize" },
-  { nombre: "Gira una vez más", imagen: "/icons/cambiar.svg", type: "retry" },
-  { nombre: "Kit Completo", imagen: "/images/kit-completo.webp", type: "prize" },
-  { nombre: "Gira una vez más", imagen: "/icons/cambiar.svg", type: "retry" },
+  { nombre: "Tomatodo", imagen: "/images/tomatodo.webp", type: "prize", weight: 30 },
+  { nombre: "Gira una vez más", imagen: "/icons/cambiar.svg", type: "retry", weight: 15 },
+  { nombre: "Gota antiestrés", imagen: "/images/gota-antiestres.webp", type: "prize", weight: 20 },
+  { nombre: "Gira una vez más", imagen: "/icons/cambiar.svg", type: "retry", weight: 15 },
+  { nombre: "Kit Completo", imagen: "/images/kit-completo.webp", type: "prize", weight: 5 },
+  { nombre: "Gira una vez más", imagen: "/icons/cambiar.svg", type: "retry", weight: 15 },
 ];
 
 const SEGMENT_ANGLE = 360 / PREMIOS.length;
@@ -25,11 +27,10 @@ const SEGMENT_COLORS = [
 ];
 
 function getWeightedPrizeIndex(): number {
-  const weights = [40, 20, 20, 10, 5, 5];
-  const total = weights.reduce((a, b) => a + b, 0);
+  const total = PREMIOS.reduce((a, p) => a + p.weight, 0);
   let random = Math.random() * total;
-  for (let i = 0; i < weights.length; i++) {
-    random -= weights[i];
+  for (let i = 0; i < PREMIOS.length; i++) {
+    random -= PREMIOS[i].weight;
     if (random <= 0) return i;
   }
   return 0;
@@ -42,36 +43,180 @@ function splitText(text: string): string[] {
   return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
 }
 
+// --- Web Audio API sound engine ---
+let audioCtx: AudioContext | null = null;
+function getAudioContext(): AudioContext {
+  if (!audioCtx) audioCtx = new AudioContext();
+  return audioCtx;
+}
+
+function playTickSound(volume = 0.15) {
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.03);
+    gain.gain.setValueAtTime(volume, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.05);
+  } catch { /* silently fail */ }
+}
+
+function playCelebrationSound() {
+  try {
+    const ctx = getAudioContext();
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      const t = ctx.currentTime + i * 0.12;
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      osc.start(t);
+      osc.stop(t + 0.3);
+    });
+  } catch { /* silently fail */ }
+}
+
+function playButtonClickSound() {
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.1);
+  } catch { /* silently fail */ }
+}
+
 type Props = {
   onPremio: (premio: string) => void;
 };
 
 export default function StepRuleta({ onPremio }: Props) {
   const [spinning, setSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
+  const [showWinner, setShowWinner] = useState(false);
+  const [winnerName, setWinnerName] = useState("");
   const wheelRef = useRef<SVGSVGElement>(null);
+  const currentRotation = useRef(0);
+  const animationRef = useRef<number>(0);
+  const tickTimers = useRef<number[]>([]);
+
+  const cleanup = useCallback(() => {
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    tickTimers.current.forEach(clearTimeout);
+    tickTimers.current = [];
+  }, []);
+
+  useEffect(() => cleanup, [cleanup]);
 
   const spin = () => {
     if (spinning) return;
-    playClickSound();
+    playButtonClickSound();
     setSpinning(true);
+    setShowWinner(false);
 
     const winnerIndex = getWeightedPrizeIndex();
     const targetAngle = SEGMENT_ANGLE * winnerIndex + SEGMENT_ANGLE / 2;
-    const fullSpins = 5 * 360;
-    const finalRotation = rotation + fullSpins + (360 - targetAngle);
 
-    setRotation(finalRotation);
+    // Total rotation: 6-8 full spins + offset to land on winner
+    const fullSpins = (6 + Math.random() * 2) * 360;
+    const totalDegrees = fullSpins + (360 - targetAngle);
 
-    setTimeout(() => {
-      const premio = PREMIOS[winnerIndex];
-      setSpinning(false);
-      if (premio.type === "retry") {
-        // allow spinning again
+    // Animation timing
+    const accelDuration = 0.8;    // seconds to reach full speed
+    const sustainDuration = 2.0;  // seconds at full speed
+    const decelDuration = 3.5;    // seconds to decelerate
+    const totalDuration = accelDuration + sustainDuration + decelDuration;
+
+    const startTime = performance.now();
+    const startRotation = currentRotation.current;
+
+    // Easing: acceleration → sustain → deceleration
+    function easeCustom(t: number): number {
+      const t1 = accelDuration / totalDuration;
+      const t2 = (accelDuration + sustainDuration) / totalDuration;
+
+      if (t <= t1) {
+        // Accelerate: ease-in (quadratic)
+        const p = t / t1;
+        const accelProgress = p * p;
+        return accelProgress * t1;
+      } else if (t <= t2) {
+        // Sustain: linear at full speed
+        return t1 + (t - t1);
       } else {
-        onPremio(premio.nombre);
+        // Decelerate: ease-out (cubic)
+        const p = (t - t2) / (1 - t2);
+        const decelProgress = 1 - (1 - p) * (1 - p) * (1 - p);
+        return t1 + (t2 - t1) + decelProgress * (1 - t2);
       }
-    }, 5000);
+    }
+
+    // Normalize so easeCustom(1) = 1
+    const maxEase = easeCustom(1);
+
+    // Schedule tick sounds synchronized with segment crossings
+    let lastSegmentIndex = -1;
+
+    function animate(now: number) {
+      const elapsed = (now - startTime) / 1000;
+      const t = Math.min(elapsed / totalDuration, 1);
+      const progress = easeCustom(t) / maxEase;
+      const currentDeg = startRotation + totalDegrees * progress;
+      currentRotation.current = currentDeg;
+
+      if (wheelRef.current) {
+        wheelRef.current.style.transform = `rotate(${currentDeg}deg)`;
+      }
+
+      // Play tick when crossing segment boundaries
+      const normalizedDeg = ((currentDeg % 360) + 360) % 360;
+      const segIndex = Math.floor(normalizedDeg / SEGMENT_ANGLE);
+      if (segIndex !== lastSegmentIndex && lastSegmentIndex !== -1) {
+        const speed = t < 0.1 ? t * 10 : t > 0.7 ? Math.max(0.3, 1 - (t - 0.7) / 0.3) : 1;
+        playTickSound(0.08 + speed * 0.12);
+      }
+      lastSegmentIndex = segIndex;
+
+      if (t < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        // Spin complete — show winner for 2 seconds
+        currentRotation.current = startRotation + totalDegrees;
+        setWinnerName(PREMIOS[winnerIndex].nombre);
+        setShowWinner(true);
+        playCelebrationSound();
+
+        const revealTimer = window.setTimeout(() => {
+          setSpinning(false);
+          setShowWinner(false);
+          if (PREMIOS[winnerIndex].type === "retry") {
+            // Allow spinning again
+          } else {
+            onPremio(PREMIOS[winnerIndex].nombre);
+          }
+        }, 2500);
+        tickTimers.current.push(revealTimer);
+      }
+    }
+
+    animationRef.current = requestAnimationFrame(animate);
   };
 
   return (
@@ -85,18 +230,18 @@ export default function StepRuleta({ onPremio }: Props) {
       <div className="relative z-10 flex flex-col min-h-full">
         <Header />
 
-        <div className="flex-1 flex flex-col items-center px-6 pt-6 pb-4">
+        <div className="flex-1 flex flex-col items-center px-6 pt-4 pb-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-dark">
             ¡Llego tu turno!
           </h2>
-          <p className="text-base text-center text-gray-500 mt-2 mb-6">
+          <p className="text-base text-center text-gray-500 mt-2 mb-4">
             Gira la ruleta y descubre que obsequio te llevas
           </p>
 
-          {/* Wheel + base container */}
+          {/* Wheel + podium integrated container */}
           <div className="relative flex flex-col items-center flex-1 w-full">
-            {/* Wheel wrapper */}
-            <div className="relative w-[440px] h-[440px] md:w-[500px] md:h-[500px] flex-shrink-0 z-10">
+            {/* Wheel wrapper — in front of podium */}
+            <div className="relative w-[420px] h-[420px] md:w-[480px] md:h-[480px] flex-shrink-0 z-10">
               {/* Pointer triangle */}
               <div className="absolute top-[-14px] left-1/2 -translate-x-1/2 z-20">
                 <div className="w-0 h-0 border-l-[16px] border-r-[16px] border-t-[28px] border-l-transparent border-r-transparent border-t-yellow-400 drop-shadow-lg" />
@@ -107,12 +252,7 @@ export default function StepRuleta({ onPremio }: Props) {
                 ref={wheelRef}
                 viewBox="0 0 400 400"
                 className="w-full h-full drop-shadow-2xl"
-                style={{
-                  transform: `rotate(${rotation}deg)`,
-                  transition: spinning
-                    ? "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)"
-                    : "none",
-                }}
+                style={{ transition: "none" }}
               >
                 {/* Outer ring */}
                 <circle cx="200" cy="200" r="198" fill="#1a3a5c" />
@@ -206,15 +346,34 @@ export default function StepRuleta({ onPremio }: Props) {
               </button>
             </div>
 
-            {/* SVG Base/pedestal */}
-            <div className="relative w-[387px] md:w-[440px] -mt-16 z-0" style={{ mixBlendMode: "multiply" }}>
+            {/* Podium/base behind the wheel — overlaps bottom half */}
+            <div className="w-[340px] md:w-[380px] -mt-[170px] md:-mt-[190px] z-0">
               <svg viewBox="0 0 387 335" fill="none" className="w-full h-auto">
-                <g style={{ mixBlendMode: "multiply" }}>
-                  <path d="M311.255 250.642L287.015 113.596L266.923 0H230.934H156.061H120.071L75.7451 250.642L61.0403 333.779H156.061H230.934H325.96L311.255 250.642Z" fill="#0097E0"/>
+                <g clipPath="url(#clip0_70_233)">
+                  <path d="M311.255 250.642L287.016 113.596L266.924 0H230.934H156.062H120.072L75.7454 250.642L61.0405 333.779H156.062H230.934H325.96L311.255 250.642Z" fill="#0059C5"/>
+                  <path d="M387 335H0C0 297.325 30.608 266.784 68.3643 266.784H318.631C356.387 266.784 386.995 297.325 386.995 335H387Z" fill="#004F73"/>
                 </g>
-                <path d="M387 335H0C0 297.325 30.608 266.784 68.3643 266.784H318.631C356.387 266.784 386.995 297.325 386.995 335H387Z" fill="#004F73"/>
+                <defs>
+                  <clipPath id="clip0_70_233">
+                    <rect width="387" height="335" fill="white"/>
+                  </clipPath>
+                </defs>
               </svg>
             </div>
+
+            {/* Winner flash overlay */}
+            {showWinner && (
+              <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+                <div className="bg-white/95 rounded-2xl px-10 py-6 shadow-2xl text-center animate-bounce-in">
+                  <p className="text-lg font-bold text-primary uppercase tracking-wide">
+                    🎉 ¡Ganaste!
+                  </p>
+                  <p className="text-2xl font-bold text-dark mt-1">
+                    {winnerName}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
