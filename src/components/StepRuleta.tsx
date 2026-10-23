@@ -69,25 +69,35 @@ export default function StepRuleta({ onPremio }: Props) {
   };
 
   return (
-    <section className="relative flex min-h-full flex-col">
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-primary" />
+    <section className="relative flex min-h-full flex-col overflow-hidden">
+      {/* Bicolor background: white top, blue bottom */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 right-0 h-[45%] bg-white" />
+        <div className="absolute bottom-0 left-0 right-0 h-[55%] bg-primary" />
+      </div>
 
       <div className="relative z-10 flex flex-col min-h-full">
         <Header />
 
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-dark">
+        <div className="flex-1 flex flex-col items-center px-6 pt-4 pb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-dark">
             ¡Llego tu turno!
           </h2>
-          <p className="text-sm text-center text-gray-500 mt-1 mb-6">
+          <p className="text-base text-center text-gray-500 mt-1 mb-4">
             Gira la ruleta y descubre que obsequio te llevas
           </p>
 
-          <div className="relative w-[320px] h-[320px] md:w-[380px] md:h-[380px]">
+          <div className="relative w-[420px] h-[420px] md:w-[480px] md:h-[480px] flex-shrink-0">
             {/* Pointer triangle */}
-            <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 z-20">
-              <div className="w-0 h-0 border-l-[14px] border-r-[14px] border-t-[24px] border-l-transparent border-r-transparent border-t-yellow-400 drop-shadow-lg" />
+            <div className="absolute top-[-14px] left-1/2 -translate-x-1/2 z-20">
+              <div className="w-0 h-0 border-l-[16px] border-r-[16px] border-t-[28px] border-l-transparent border-r-transparent border-t-yellow-400 drop-shadow-lg" />
             </div>
+
+            {/* Glow effect under wheel */}
+            <div
+              className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 w-[300px] h-[80px] rounded-[50%] blur-2xl opacity-40"
+              style={{ background: "radial-gradient(ellipse, #54C3F1 0%, transparent 70%)" }}
+            />
 
             {/* Wheel */}
             <svg
@@ -117,7 +127,7 @@ export default function StepRuleta({ onPremio }: Props) {
                 const x2 = 200 + r * Math.cos(endRad);
                 const y2 = 200 + r * Math.sin(endRad);
                 const midAngle = startAngle + SEGMENT_ANGLE / 2;
-                const textR = 135;
+                const textR = 140;
                 const textRad = (midAngle * Math.PI) / 180;
                 const tx = 200 + textR * Math.cos(textRad);
                 const ty = 200 + textR * Math.sin(textRad);
@@ -146,7 +156,7 @@ export default function StepRuleta({ onPremio }: Props) {
                       x={tx}
                       y={ty}
                       fill="white"
-                      fontSize="10"
+                      fontSize="11"
                       fontWeight="bold"
                       textAnchor="middle"
                       dominantBaseline="middle"
@@ -168,7 +178,7 @@ export default function StepRuleta({ onPremio }: Props) {
                     key={i}
                     cx={cx}
                     cy={cy}
-                    r="3"
+                    r="3.5"
                     fill={i % 2 === 0 ? "#FFD700" : "#ffffff"}
                   />
                 );
@@ -179,7 +189,7 @@ export default function StepRuleta({ onPremio }: Props) {
             <button
               onClick={spin}
               disabled={spinning}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-20 h-20 rounded-full bg-gradient-to-b from-[#1a3a5c] to-[#0d2137] border-4 border-[#2a5a8c] text-white font-bold text-sm uppercase shadow-xl transition-transform active:scale-95 disabled:opacity-70"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-24 h-24 rounded-full bg-gradient-to-b from-[#1a3a5c] to-[#0d2137] border-4 border-[#2a5a8c] text-white font-bold text-base uppercase shadow-xl transition-transform active:scale-95 disabled:opacity-70"
             >
               GIRAR
             </button>

@@ -92,70 +92,70 @@ export default function StepRegistro({ onSubmit }: Props) {
       <div className="relative z-10 flex flex-col min-h-full">
         <Header />
 
-        <div className="flex-1 px-6 pb-8">
+        <div className="flex-1 px-8 pb-10">
           <div className="mx-auto max-w-md">
-            <h1 className="text-2xl md:text-3xl font-bold text-center text-dark mt-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-center text-dark mt-6 leading-tight">
               ¡Bienvenido a nuestra experiencia!
             </h1>
-            <p className="text-sm text-center text-gray-600 mt-2 mb-6">
+            <p className="text-base text-center text-gray-600 mt-3 mb-8">
               Registra tus datos y participa de un obsequio especial de DAIKIN SAEG
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="text-xs font-medium text-gray-700">Nombres completos*</label>
+                <label className="text-sm font-medium text-gray-700">Nombres y apellidos*</label>
                 <input
                   name="nombres"
                   type="text"
                   required
                   value={form.nombres}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
+                  className="w-full border border-gray-300 bg-white/70 px-4 py-3.5 text-base text-dark outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-gray-700">Correo electrónico*</label>
+                <label className="text-sm font-medium text-gray-700">Correo electrónico*</label>
                 <input
                   name="email"
                   type="email"
                   required
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
+                  className="w-full border border-gray-300 bg-white/70 px-4 py-3.5 text-base text-dark outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-gray-700">Teléfono*</label>
+                <label className="text-sm font-medium text-gray-700">Teléfono*</label>
                 <input
                   name="telefono"
                   type="tel"
                   required
                   value={form.telefono}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
+                  className="w-full border border-gray-300 bg-white/70 px-4 py-3.5 text-base text-dark outline-none focus:border-primary"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-gray-700">Empresa*</label>
+                  <label className="text-sm font-medium text-gray-700">Empresa*</label>
                   <input
                     name="empresa"
                     type="text"
                     required
                     value={form.empresa}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-dark outline-none focus:border-primary"
+                    className="w-full border border-gray-300 bg-white/70 px-4 py-3.5 text-base text-dark outline-none focus:border-primary"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-700">Interesado en*</label>
+                  <label className="text-sm font-medium text-gray-700">Interesado en*</label>
                   <button
                     type="button"
                     onClick={() => setShowServicios(!showServicios)}
-                    className="w-full border border-gray-300 bg-white/60 px-3 py-2.5 text-sm text-left text-dark outline-none focus:border-primary"
+                    className="w-full border border-gray-300 bg-white/70 px-4 py-3.5 text-base text-left text-dark outline-none focus:border-primary"
                   >
                     {form.servicios.length > 0
                       ? `${form.servicios.length} seleccionado(s)`
@@ -165,17 +165,17 @@ export default function StepRegistro({ onSubmit }: Props) {
               </div>
 
               {showServicios && (
-                <div className="rounded-lg bg-white/80 p-3 shadow-lg backdrop-blur">
+                <div className="rounded-lg bg-white/90 p-4 shadow-lg backdrop-blur">
                   {SERVICIOS_OPTIONS.map((servicio) => (
                     <label
                       key={servicio}
-                      className="flex items-center gap-2 py-1.5 text-sm text-dark cursor-pointer"
+                      className="flex items-center gap-3 py-2 text-base text-dark cursor-pointer"
                     >
                       <input
                         type="checkbox"
                         checked={form.servicios.includes(servicio)}
                         onChange={() => toggleServicio(servicio)}
-                        className="h-4 w-4 rounded accent-primary"
+                        className="h-5 w-5 rounded accent-primary"
                       />
                       {servicio}
                     </label>
@@ -183,25 +183,27 @@ export default function StepRegistro({ onSubmit }: Props) {
                 </div>
               )}
 
-              <label className="flex items-start gap-2 cursor-pointer mt-2">
+              <label className="flex items-start gap-3 cursor-pointer mt-3">
                 <input
                   type="checkbox"
                   checked={acepta}
                   onChange={(e) => setAcepta(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded accent-primary"
+                  className="mt-0.5 h-5 w-5 rounded accent-primary"
                 />
-                <span className="text-xs text-gray-600">
+                <span className="text-sm text-gray-600">
                   Autorizo el tratamiento de mis datos personales para ser contactado por DAIKIN SAEG
                 </span>
               </label>
 
-              <button
-                type="submit"
-                disabled={!isValid || loading}
-                className="w-full bg-primary py-3 text-sm font-bold uppercase text-white tracking-wide disabled:opacity-50 transition-all hover:bg-primary-dark active:scale-[0.98]"
-              >
-                {loading ? "Registrando..." : "Registrarme y continuar"}
-              </button>
+              <div className="flex justify-center pt-2">
+                <button
+                  type="submit"
+                  disabled={!isValid || loading}
+                  className="bg-primary px-12 py-3.5 text-base font-bold uppercase text-white tracking-wide rounded-full disabled:opacity-50 transition-all hover:bg-primary-dark active:scale-[0.98]"
+                >
+                  {loading ? "Registrando..." : "Registrarme y continuar"}
+                </button>
+              </div>
             </form>
           </div>
         </div>

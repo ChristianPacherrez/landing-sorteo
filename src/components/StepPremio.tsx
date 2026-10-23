@@ -26,23 +26,27 @@ function generateConfetti(count: number): ConfettiPiece[] {
   }));
 }
 
-type FireworkDot = {
+type FireworkBurst = {
   id: number;
   cx: number;
   cy: number;
   color: string;
   delay: number;
   size: number;
+  rays: number;
 };
 
-function generateFireworks(count: number): FireworkDot[] {
+const FIREWORK_COLORS = ["#0097E0", "#4ECDC4", "#96E6A1", "#FF6B6B", "#FFD700", "#DDA0DD"];
+
+function generateFireworks(count: number): FireworkBurst[] {
   return Array.from({ length: count }, (_, i) => ({
     id: i,
-    cx: 10 + Math.random() * 80,
-    cy: 10 + Math.random() * 60,
-    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+    cx: 5 + Math.random() * 90,
+    cy: 15 + Math.random() * 70,
+    color: FIREWORK_COLORS[Math.floor(Math.random() * FIREWORK_COLORS.length)],
     delay: Math.random() * 4,
-    size: 40 + Math.random() * 60,
+    size: 50 + Math.random() * 80,
+    rays: 12 + Math.floor(Math.random() * 8),
   }));
 }
 
@@ -53,7 +57,7 @@ type Props = {
 
 export default function StepPremio({ premio, onReset }: Props) {
   const [confetti] = useState(() => generateConfetti(50));
-  const [fireworks] = useState(() => generateFireworks(12));
+  const [fireworks] = useState(() => generateFireworks(8));
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -79,9 +83,9 @@ export default function StepPremio({ premio, onReset }: Props) {
         />
       ))}
 
-      {/* Fireworks */}
+      {/* Firework bursts (radial lines) */}
       {fireworks.map((fw) => (
-        <div
+        <svg
           key={fw.id}
           className="absolute pointer-events-none z-20"
           style={{
@@ -89,41 +93,60 @@ export default function StepPremio({ premio, onReset }: Props) {
             top: `${fw.cy}%`,
             width: fw.size,
             height: fw.size,
-            borderRadius: "50%",
-            border: `2px solid ${fw.color}`,
-            animation: `firework 2s ease-out ${fw.delay}s infinite`,
+            marginLeft: -fw.size / 2,
+            marginTop: -fw.size / 2,
+            animation: `firework 3s ease-out ${fw.delay}s infinite`,
           }}
-        />
+          viewBox="0 0 100 100"
+        >
+          {Array.from({ length: fw.rays }).map((_, j) => {
+            const angle = (j * 360) / fw.rays;
+            const rad = (angle * Math.PI) / 180;
+            const x2 = 50 + 45 * Math.cos(rad);
+            const y2 = 50 + 45 * Math.sin(rad);
+            return (
+              <line
+                key={j}
+                x1="50"
+                y1="50"
+                x2={x2}
+                y2={y2}
+                stroke={fw.color}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            );
+          })}
+        </svg>
       ))}
 
       <div className="relative z-10 flex flex-col min-h-full">
         <Header />
 
         <div
-          className={`flex-1 flex flex-col items-center justify-center px-6 py-8 transition-all duration-1000 ${
+          className={`flex-1 flex flex-col items-center justify-center px-8 py-8 transition-all duration-1000 ${
             show ? "opacity-100 scale-100" : "opacity-0 scale-50"
           }`}
         >
-          <p className="text-5xl mb-2">🎉</p>
           <h2
-            className="text-3xl md:text-4xl font-bold text-center text-white"
+            className="text-4xl md:text-5xl font-bold text-center text-white leading-tight"
             style={{ animation: "pulse-glow 2s ease-in-out infinite" }}
           >
-            ¡Felicitaciones! 🤩
+            🎉 ¡Felicitaciones! 🤩
           </h2>
           <h3
-            className="text-2xl md:text-3xl font-bold text-center text-yellow-400 mt-2"
+            className="text-3xl md:text-4xl font-bold text-center text-yellow-400 mt-3"
             style={{ animation: "pulse-glow 2s ease-in-out 0.5s infinite" }}
           >
             Ganaste un {premio}
           </h3>
-          <p className="text-sm text-center text-white/70 mt-4 max-w-xs">
+          <p className="text-base text-center text-white/70 mt-6 max-w-sm">
             Gracias por participar en nuestra experiencia. Solicita tu obsequio a nuestra anfitriona
           </p>
 
           <button
             onClick={() => { playClickSound(); onReset(); }}
-            className="mt-8 border-2 border-white px-8 py-3 text-sm font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-purple active:scale-[0.98]"
+            className="mt-10 border-2 border-white px-10 py-3.5 text-base font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-purple active:scale-[0.98]"
           >
             Volver al inicio
           </button>
