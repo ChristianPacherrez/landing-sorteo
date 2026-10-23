@@ -135,7 +135,7 @@ export default function StepPremio({ premio, onReset }: Props) {
             className="text-3xl md:text-4xl font-bold text-center text-yellow-400 mt-3"
             style={{ animation: "pulse-glow 2s ease-in-out 0.5s infinite" }}
           >
-            Ganaste un {premio}
+            ¡Ganaste {premio}!
           </h3>
           <p className="text-base text-center text-white/70 mt-6 max-w-sm">
             Gracias por participar en nuestra experiencia. Solicita tu obsequio a nuestra anfitriona
