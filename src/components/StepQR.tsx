@@ -85,7 +85,7 @@ export default function StepQR({ onContinue }: Props) {
 
           <button
             onClick={() => { playClickSound(); onContinue(); }}
-            className="mt-8 border-2 border-white px-10 py-3.5 text-base font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-primary active:scale-[0.98]"
+            className="mt-8 border-2 border-white px-10 py-4 text-base font-bold uppercase text-white tracking-wide rounded-xl transition-all hover:bg-white hover:text-primary active:scale-[0.98]"
           >
             ¡Ya los sigo! Ir a la ruleta
           </button>

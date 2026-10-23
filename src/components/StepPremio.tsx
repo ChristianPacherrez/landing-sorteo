@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Header from "@/components/Header";
 import { playClickSound } from "@/lib/sounds";
 
 type ConfettiPiece = {
@@ -120,11 +119,9 @@ export default function StepPremio({ premio, onReset }: Props) {
         </svg>
       ))}
 
-      <div className="relative z-10 flex flex-col min-h-full">
-        <Header />
-
+      <div className="relative z-10 flex flex-1 items-center justify-center">
         <div
-          className={`flex-1 flex flex-col items-center justify-center px-8 py-8 transition-all duration-1000 ${
+          className={`flex flex-col items-center justify-center px-8 py-12 transition-all duration-1000 ${
             show ? "opacity-100 scale-100" : "opacity-0 scale-50"
           }`}
         >
@@ -146,7 +143,7 @@ export default function StepPremio({ premio, onReset }: Props) {
 
           <button
             onClick={() => { playClickSound(); onReset(); }}
-            className="mt-10 border-2 border-white px-10 py-3.5 text-base font-bold uppercase text-white tracking-wide transition-all hover:bg-white hover:text-purple active:scale-[0.98]"
+            className="mt-10 border-2 border-white px-10 py-4 text-base font-bold uppercase text-white tracking-wide rounded-xl transition-all hover:bg-white hover:text-purple active:scale-[0.98]"
           >
             Volver al inicio
           </button>
