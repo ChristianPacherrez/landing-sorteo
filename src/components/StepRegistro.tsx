@@ -8,7 +8,6 @@ import { playClickSound } from "@/lib/sounds";
 const SERVICIOS_OPTIONS = [
   "Aire acondicionado residencial",
   "Climatización comercial",
-  "Sistemas VRV/VRF",
   "Ventilación y calidad de aire",
   "Mantenimiento preventivo",
 ];
