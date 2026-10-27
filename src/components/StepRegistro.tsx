@@ -10,6 +10,8 @@ const SERVICIOS_OPTIONS = [
   "Climatización comercial",
   "Ventilación y calidad de aire",
   "Mantenimiento preventivo",
+  "Más soluciones integrales e ingeniería",
+  "Soluciones en refrigeración, industrial y comercial",
 ];
 
 type Props = {
