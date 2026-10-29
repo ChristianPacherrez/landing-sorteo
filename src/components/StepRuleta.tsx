@@ -21,14 +21,23 @@ const SEGMENT_COLORS = [
   "#0097E0", "#2AABE8", "#0097E0", "#2AABE8", "#0097E0", "#2AABE8",
 ];
 
-function getWeightedPrizeIndex(): number {
-  const total = PREMIOS.reduce((a, p) => a + p.weight, 0);
-  let random = Math.random() * total;
-  for (let i = 0; i < PREMIOS.length; i++) {
-    random -= PREMIOS[i].weight;
-    if (random <= 0) return i;
+let prizeCount = 0;
+const KIT_COMPLETO_EVERY = 20 + Math.floor(Math.random() * 11); // entre 20 y 30
+
+function getNextPrizeIndex(): number {
+  const RETRY_CHANCE = 0.35; // 35% de probabilidad de "gira otra vez"
+  if (Math.random() < RETRY_CHANCE) {
+    // Elegir uno de los 3 segmentos de retry (índices 1, 3, 5)
+    const retrySlots = [1, 3, 5];
+    return retrySlots[Math.floor(Math.random() * retrySlots.length)];
   }
-  return 0;
+  prizeCount++;
+  if (prizeCount >= KIT_COMPLETO_EVERY) {
+    prizeCount = 0;
+    return 4; // kit-completo
+  }
+  // Alternar tomatodo (0) y gota antiestrés (2)
+  return prizeCount % 2 === 1 ? 0 : 2;
 }
 
 function splitText(text: string): string[] {
@@ -178,7 +187,7 @@ export default function StepRuleta({ onPremio }: Props) {
     setOverlayType(null);
 
     // Step 1: Select winner by weighted probability
-    const winnerIndex = getWeightedPrizeIndex();
+    const winnerIndex = getNextPrizeIndex();
     const startRot = currentRotation.current;
 
     // Step 2-3: Compute rotation to land on that segment
