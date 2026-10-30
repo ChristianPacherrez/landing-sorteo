@@ -22,22 +22,17 @@ const SEGMENT_COLORS = [
 ];
 
 let prizeCount = 0;
-const KIT_COMPLETO_EVERY = 20 + Math.floor(Math.random() * 11); // entre 20 y 30
+const PRIZE_SEQUENCE = [0, 2, 4]; // tomatodo, gota antiestrés, kit completo
 
 function getNextPrizeIndex(): number {
-  const RETRY_CHANCE = 0.35; // 35% de probabilidad de "gira otra vez"
+  const RETRY_CHANCE = 0.3;
   if (Math.random() < RETRY_CHANCE) {
-    // Elegir uno de los 3 segmentos de retry (índices 1, 3, 5)
     const retrySlots = [1, 3, 5];
     return retrySlots[Math.floor(Math.random() * retrySlots.length)];
   }
+  const idx = PRIZE_SEQUENCE[prizeCount % PRIZE_SEQUENCE.length];
   prizeCount++;
-  if (prizeCount >= KIT_COMPLETO_EVERY) {
-    prizeCount = 0;
-    return 4; // kit-completo
-  }
-  // Alternar tomatodo (0) y gota antiestrés (2)
-  return prizeCount % 2 === 1 ? 0 : 2;
+  return idx;
 }
 
 function splitText(text: string): string[] {
